@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-n5^^tc)!2mxl5ez1o8x*4$=(qwmm#tmg+3zwl_51juou9#3tvs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# DEBUG se activa automáticamente en desarrollo local y se desactiva en producción
+# (Railway define la variable PORT). Puedes forzarlo con DJANGO_DEBUG=True/False.
+DEBUG = os.environ.get("DJANGO_DEBUG", str(os.environ.get("PORT") is None)) == "True"
 
-ALLOWED_HOSTS = ["127.0.0.1", "rlfront.up.railway.app", "rlback.up.railway.app"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "rlfront.up.railway.app", "rlback.up.railway.app"]
 
 
 # Application definition
