@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+.env
+
+# Bases de datos locales
+*.sqlite3
+*.db
+
+# Modelos / archivos pesados generados
+*.pkl
+*.joblib
+
+# IDEs
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Django
+staticfiles/
+*.log
