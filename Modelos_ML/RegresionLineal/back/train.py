@@ -40,4 +40,8 @@ model.fit(x, y)
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "models/linear_model.joblib"
 
+# La carpeta models/ no se versiona (los .joblib están en .gitignore), así que
+# hay que crearla antes de guardar el modelo (p. ej. durante el build en Railway).
+MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
+
 joblib.dump(model, MODEL_PATH)

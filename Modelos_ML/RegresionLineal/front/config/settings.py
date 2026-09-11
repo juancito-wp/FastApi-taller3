@@ -21,14 +21,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n5^^tc)!2mxl5ez1o8x*4$=(qwmm#tmg+3zwl_51juou9#3tvs'
+SECRET_KEY = os.environ.get(
+    "DJANGO_SECRET_KEY",
+    'django-insecure-n5^^tc)!2mxl5ez1o8x*4$=(qwmm#tmg+3zwl_51juou9#3tvs',  # solo para desarrollo local
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG se activa automáticamente en desarrollo local y se desactiva en producción
 # (Railway define la variable PORT). Puedes forzarlo con DJANGO_DEBUG=True/False.
 DEBUG = os.environ.get("DJANGO_DEBUG", str(os.environ.get("PORT") is None)) == "True"
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "rlfront.up.railway.app", "rlback.up.railway.app"]
+# Hosts permitidos. El comodín cubre los dominios que genera Railway
+# (<servicio>-production-xxxx.up.railway.app) y se puede añadir una lista extra
+# separada por comas en la variable de entorno ALLOWED_HOSTS.
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".up.railway.app", ".railway.app"]
+ALLOWED_HOSTS += [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h.strip()]
+
+_railway_domain = os.environ.get("RAILWAY_PUBLIC_DOMAIN")
+if _railway_domain:
+    ALLOWED_HOSTS.append(_railway_domain)
+
+# Orígenes de confianza para CSRF (Django lo exige al servir por HTTPS tras el proxy de Railway).
+CSRF_TRUSTED_ORIGINS = ["https://*.up.railway.app", "https://*.railway.app"]
+CSRF_TRUSTED_ORIGINS += [
+    o.strip() for o in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
+]
+
+# Railway termina el TLS en su proxy: hay que indicarle a Django que la petición original era HTTPS.
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
@@ -119,6 +139,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Email
