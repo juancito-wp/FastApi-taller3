@@ -100,8 +100,8 @@ python manage.py runserver 8001
 | Proyecto | Plataforma | Enlace |
 |---|---|---|
 | Random Forest | Streamlit Cloud | https://modelosml.streamlit.app/ |
-| Regresión Lineal — front | Railway | `https://<dominio-del-front>.up.railway.app` |
-| Regresión Lineal — back | Railway | `https://<dominio-del-back>.up.railway.app` |
+| Regresión Lineal — front | Railway | `https://front-production-a972.up.railway.app/` |
+| Regresión Lineal — back | Railway | `https://fastapi-taller3-production.up.railway.app/` |
 
 ---
 
