@@ -1,110 +1,248 @@
-# :camera: py_img: Detección de rostros en imágenes y videos en tiempo real
+# 📷 py_img — Detección de rostros en imágenes y en tiempo real
 
-Este proyecto proporciona una aplicación web para la detección de rostros en tiempo real utilizando Python, Flask, OpenCV y Bootstrap.
+Aplicación web para detectar rostros con **Python + OpenCV**. Permite subir una imagen o usar la cámara web en vivo; el resultado se devuelve con los rostros enmarcados en verde y el conteo de cuántos se detectaron.
 
-Permite a los usuarios subir una imagen o usar su cámara web para detectar rostros, mostrando los resultados con recuadros delimitadores y un recuento de los rostros detectados.
-
-## :star: Badges
-
-| Build Status | Version | License |
-| :----------: | :-----: | :-----: |
-| ![Build Status](https://img.shields.io/badge/build-passing-brightgreen) | ![Version](https://img.shields.io/badge/version-1.0.0-blue) | ![License](https://img.shields.io/badge/license-MIT-red) |
-
-## :page_facing_up: Description
-
-py_img is a web-based application designed for computer vision tasks, specifically focusing on real-time face detection. Leveraging the power of OpenCV and a Flask backend, it offers an interactive user interface built with HTML, CSS, and Bootstrap. Users can either upload an image file or utilize their device's webcam to perform face detection. The application processes the input, highlights detected faces with green bounding boxes, and displays the total count of faces found. It's a practical demonstration of applying machine learning models for image analysis in a user-friendly web environment.
-
-## :clipboard: Table of Contents
-
-- [Badges](#badges)
-- [Description](#description)
-- [Table of Contents](#table-of-contents)
-- [Features](#features-rocket)
-- [Tech Stack](#tech-stack-gear)
-- [Project Structure](#project-structure-file_folder)
-- [Installation](#installation-wrench)
-- [Usage](#usage-computer)
-- [How to Use](#how-to-use-play_button)
-- [API Reference](#api-reference-scroll)
-- [Contributing](#contributing-handshake)
-- [License](#license-key)
-- [Important Links](#important-links-link)
-- [Footer](#footer-memo)
-
-## :rocket: Features
-
-- **Dual Input Modes**: Supports both image uploads and live webcam feed for face detection.
-- **Real-time Detection**: Processes video frames from the webcam for immediate results.
-- **Drag and Drop Interface**: User-friendly drag-and-drop functionality for image uploads.
-- **Face Highlighting**: Detects faces and draws bounding boxes around them in the output.
-- **Face Count Display**: Shows the number of faces detected in the image or video stream.
-- **Responsive Design**: Utilizes Bootstrap for a clean and adaptable user interface.
-- **Camera Toggle**: Ability to switch between front and rear cameras if available.
-- **Clear Visual Feedback**: Loading indicators and clear display of original and processed images.
-
-## :gear: Tech Stack
-
-- **Backend**: Python, Flask
-- **Computer Vision**: OpenCV (`opencv-python-headless`)
-- **Frontend**: HTML, CSS, JavaScript, Bootstrap
-- **Dependencies**: NumPy
-
-## :file_folder: Project Structure
-
-```plaintext
-py_img/
-│
-├── api/
-│   └── index.py            # Servidor Backend (Flask)
-│
-├── public/
-│   ├── index.html          # Interfaz Frontend
-│   ├── style.css           # Estilos responsivos
-│   └── script.js           # Lógica del cliente e interacción con la API
-│
-├── haarcascade_frontalface_default.xml  # Archivo de entrenamiento de OpenCV
-├── requirements.txt        # Dependencias de Python
-└── vercel.json             # Configuración de despliegue para Vercel
-```
-
-## :wrench: Installation
-
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/carloscastrox/py_img.git
-    cd py_img
-    ```
-
-2.  **Install Python dependencies:**
-    This project uses `pip` and a `requirements.txt` file.
-    ```bash
-    pip install -r requirements.txt
-    ```
-    *   `Flask==3.0.2`
-    *   `opencv-python-headless==4.9.0.80`
-    *   `numpy==1.26.4`
-
-3.  **Run the Flask development server:**
-    Navigate to the `api` directory and run the application.
-    ```bash
-    cd api
-    python index.py
-    ```
-    The application will be accessible at `http://localhost:5000` (or the port Flask defaults to).
-
-## :computer: Usage
-
-This project is a web application designed for real-time face detection. It can be used to:
-
--   **Detect faces in uploaded images**: Simply drag and drop an image file or use the file input to upload a picture.
--   **Detect faces in real-time from your webcam**: Enable your webcam to see faces detected live.
-
-## :play_button: How to Use
-
-1.  **Start the application**: Ensure the Flask server is running (as per the installation steps).
-2.  **Access the web interface**: Open your web browser and navigate to `http://localhost:5000`.
-3.  **Choose your input method**: 
-    *   **Upload Image**: Drag an image file into the designated drop zone or click to browse for a file. Then, click the 
+> **Ruta del proyecto en esta máquina**
+>
+> ```
+> C:\Users\Valeria\Desktop\taller3_pyml\Modelos_ML\py_img\py_img-main
+> ```
 
 ---
-**<p align="center">Generated by [ReadmeCodeGen](https://www.readmecodegen.com/)</p>**
+
+## 📋 Tabla de contenido
+
+- [Características](#-características)
+- [Stack tecnológico](#-stack-tecnológico)
+- [Estructura del proyecto](#-estructura-del-proyecto)
+- [Instalación y ejecución local](#-instalación-y-ejecución-local)
+- [Cómo usarlo](#-cómo-usarlo)
+- [Referencia de la API](#-referencia-de-la-api)
+- [Cómo funciona](#-cómo-funciona)
+- [Despliegue en Vercel](#-despliegue-en-vercel)
+- [Problemas comunes](#-problemas-comunes)
+- [Autor](#-autor)
+
+---
+
+## ✨ Características
+
+- **Dos modos de entrada**: subir una archivo de imagen o usar la cámara web.
+- **Detección en vivo**: procesa un frame cada 600 ms desde la cámara.
+- **Arrastrar y soltar** para cargar imágenes, además del selector clásico.
+- **Rostros enmarcados**: OpenCV dibuja los recuadros verdes sobre la imagen.
+- **Conteo de rostros**: contador de la escena actual y acumulado en el encabezado.
+- **Interfaz oscura tipo HUD** con fondo animado, paneles de cristal y microanimaciones (sin frameworks CSS).
+- **Cambio de cámara** frontal / trasera en dispositivos que la tengan.
+- **Diagnóstico integrado**: si el backend falla, la interfaz lo dice en pantalla en vez de quedarse muda.
+
+---
+
+## 🧰 Stack tecnológico
+
+| Capa | Tecnología |
+| :--- | :--- |
+| Backend | Python + Flask (aplicación WSGI) |
+| Visión por computador | OpenCV (`opencv-python-headless`) |
+| Clasificador | Haar Cascade `haarcascade_frontalface_default.xml` |
+| Datos | NumPy |
+| Frontend | HTML, CSS y JavaScript puros (sin dependencias) |
+| Despliegue | Vercel (función serverless + estáticos en el CDN) |
+
+---
+
+## 📁 Estructura del proyecto
+
+```plaintext
+py_img-main/
+│
+├── api/
+│   └── detect.py                        # Backend Flask: detección y diagnóstico
+│
+├── public/
+│   ├── index.html                       # Interfaz del frontend
+│   ├── style.css                        # Tema visual (oscuro / HUD)
+│   ├── script.js                        # Lógica del cliente y llamadas a la API
+│   └── logosena.png                     # Logotipo y favicon
+│
+├── haarcascade_frontalface_default.xml  # Clasificador de rostros de OpenCV
+├── requirements.txt                     # Dependencias para Vercel
+├── vercel.json                          # Configuración de despliegue
+└── README.md
+```
+
+---
+
+## ⚙️ Instalación y ejecución local
+
+### 1. Ir a la raíz del proyecto
+
+```bash
+cd "C:/Users/Valeria/Desktop/taller3_pyml/Modelos_ML/py_img/py_img-main"
+```
+
+### 2. Instalar dependencias
+
+Para correr el servidor en local solo hace falta **Flask**:
+
+```bash
+python -m pip install flask
+```
+
+> ⚠️ **No ejecutes `pip install -r requirements.txt` en tu Python local.** Ese archivo está fijado para el runtime de Vercel (Python 3.12). En un Python más nuevo (3.13/3.14) `numpy==1.26.4` y `opencv-python-headless==4.9.0.80` no tienen wheels y la instalación falla.
+>
+> Si prefieres un entorno aislado, crea un virtualenv e instala las versiones sin fijar:
+>
+> ```bash
+> python -m venv .venv
+> source .venv/Scripts/activate     # PowerShell: .venv\Scripts\Activate.ps1
+> pip install flask opencv-python-headless numpy
+> ```
+
+### 3. Arrancar el servidor
+
+```bash
+python api/detect.py
+```
+
+Verás algo así:
+
+```plaintext
+[py_img] Clasificador Haar cargado desde: ...\haarcascade_frontalface_default.xml
+ * Running on http://127.0.0.1:5000
+```
+
+### 4. Abrir la aplicación
+
+Entra a **<http://localhost:5000>** en el navegador.
+
+> 🚫 **No abras `public/index.html` con doble clic ni uses Live Server.** Esos servidores solo reparten archivos estáticos: no ejecutan Python, así que `/api/detect` no existe, la detección nunca responde y el panel "Resultado del servidor" se queda vacío. Flask sirve en el mismo puerto el frontend y la API, así que todo debe abrirse desde `http://localhost:5000`.
+
+El servidor arranca con recarga automática (`debug=True`): al guardar cambios se reinicia solo. Para detenerlo usa `Ctrl+C`.
+
+---
+
+## 🖱 Cómo usarlo
+
+1. Abre la aplicación en <http://localhost:5000>.
+2. Elige el modo en el selector superior:
+   - **Subir archivo**: arrastra una imagen a la zona de carga (o haz clic para buscarla) y pulsa **Procesar imagen**.
+   - **Usar cámara**: pulsa **Encender cámara** y autoriza el permiso del navegador. Con **Cambiar cámara** alternas entre frontal y trasera, y con **Apagar cámara** detienes el flujo.
+3. Mira el panel de la derecha: **Vista previa / origen** muestra la imagen original y **Resultado del servidor** la imagen con los rostros enmarcados.
+4. El contador **Rostros detectados en la escena** aparece sobre el panel de resultados; el encabezado acumula detecciones y frames analizados durante la sesión.
+
+> La cámara solo funciona en un contexto seguro: `localhost` o HTTPS. Si abres la página desde `file://`, el navegador niega el acceso a la cámara.
+
+---
+
+## 🔌 Referencia de la API
+
+### `POST /api/detect` — Detectar rostros
+
+Recibe la imagen como `multipart/form-data` en el campo `image`.
+
+```bash
+curl -X POST -F "image=@public/logosena.png" http://localhost:5000/api/detect
+```
+
+**Respuesta `200`:**
+
+```json
+{
+  "success": true,
+  "faces_detected": 2,
+  "image": "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+}
+```
+
+| Campo | Descripción |
+| :--- | :--- |
+| `success` | `true` si la imagen se procesó correctamente. |
+| `faces_detected` | Número de rostros encontrados en esa imagen o frame. |
+| `image` | Imagen resultante en base64, con los recuadros verdes pintados por OpenCV. |
+
+**Errores:**
+
+| Código | Cuándo |
+| :--- | :--- |
+| `400` | No se envió el campo `image`, o el archivo no es una imagen válida. |
+| `500` | Error inesperado. La respuesta incluye un objeto `diagnostico` con el detalle. |
+
+### `GET /api/detect` — Diagnóstico del servidor
+
+Devuelve el estado del backend en JSON: si el clasificador Haar cargó y desde dónde, las rutas que se probaron, y las versiones de Python, OpenCV y NumPy.
+
+```bash
+curl http://localhost:5000/api/detect
+```
+
+Es la forma más rápida de comprobar un despliegue: abre la URL en el navegador y busca `"cascade_ok": true`.
+
+### Rutas del frontend
+
+| Ruta | Descripción |
+| :--- | :--- |
+| `GET /` | Sirve `public/index.html`. |
+| `GET /<path>` | Sirve el resto de archivos estáticos de `public/` (`style.css`, `script.js`, `logosena.png`). |
+
+---
+
+## 🧠 Cómo funciona
+
+1. El usuario sube una imagen o el navegador captura un frame de la cámara cada 600 ms (se dibuja en un `<canvas>` y se exporta como JPEG con calidad 0.7).
+2. El frontend envía ese archivo por `FormData` al endpoint `/api/detect`.
+3. Flask decodifica los bytes con `cv2.imdecode`, pasa la imagen a escala de grises y busca rostros con `CascadeClassifier.detectMultiScale(scaleFactor=1.1, minNeighbors=5, minSize=(40, 40))`.
+4. Cada rostro encontrado se enmarca con `cv2.rectangle` en verde sobre una copia de la imagen original.
+5. La imagen con los recuadros se comprime a JPEG, se codifica en base64 y se devuelve al navegador, que la muestra en el panel de resultados y actualiza el contador.
+
+---
+
+## ☁️ Despliegue en Vercel
+
+El proyecto ya incluye `vercel.json` con la configuración actual:
+
+```json
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "public",
+  "functions": {
+    "api/detect.py": {
+      "includeFiles": "haarcascade_frontalface_default.xml",
+      "maxDuration": 30
+    }
+  }
+}
+```
+
+**Puntos importantes al desplegar:**
+
+1. **Fuera del proyecto en el dashboard**, deja el *Framework Preset* en **Other**. Si hay un preset distinto, `outputDirectory` no se aplica y el frontend no se sirve.
+2. **No crees un archivo `.python-version`**: el proyecto debe quedarse en el Python por defecto de Vercel (3.12), que es el que tiene wheels para las versiones fijadas en `requirements.txt`.
+3. `includeFiles` garantiza que el `.xml` del clasificador viaje dentro de la función. Aun así, el backend lo busca en varias rutas y como último recurso usa la copia que viene incluida en `opencv-python-headless`, así que la detección funciona incluso si el archivo no se empaqueta.
+4. `maxDuration: 30` da margen suficiente al *cold start* de OpenCV en la primera petición.
+5. **Verifica después de desplegar**: abre `https://TU-APP.vercel.app/api/detect` en el navegador. Debe responder con `"cascade_ok": true` y la ruta desde donde cargó el clasificador.
+6. Recuerda que un cambio en el backend requiere **volver a desplegar**; el sitio publicado no se actualiza solo.
+
+> ⚠️ **Límite de tamaño**: Vercel rechaza los cuerpos de petición mayores a **4.5 MB**. Una fotografía de celular puede superar ese tamaño y devolver un error `413` antes de llegar a Flask. Si pasa, conviene redimensionar la imagen en el navegador antes de enviarla.
+
+---
+
+## 🩺 Problemas comunes
+
+| Síntoma | Causa y solución |
+| :--- | :--- |
+| El panel "Resultado del servidor" se queda vacío y no aparece el conteo | El backend no está atendiendo `/api/detect`. Abre la app desde <http://localhost:5000> con `python api/detect.py` corriendo; no uses Live Server ni abras el HTML directo. |
+| Aviso rojo con `404` en `/api/detect` | La ruta no existe en el servidor actual. Arranca Flask (`python api/detect.py`) y entra por `http://localhost:5000`. |
+| `500` con `(-215:Assertion failed) !empty()` | El clasificador Haar cargó vacío porque no encontró el `.xml`. Revisa `GET /api/detect`: debe aparecer `"cascade_ok": true`. |
+| La cámara no enciende o da error de permisos | `getUserMedia` solo funciona en `localhost` o HTTPS, nunca desde `file://`. Usa `http://localhost:5000`. |
+| `ModuleNotFoundError: No module named 'flask'` | Falta Flask en el intérprete con el que ejecutas: `python -m pip install flask`. |
+| `413` o "la imagen es demasiado grande" | La imagen supera el límite de 4.5 MB del servidor. Usa una imagen más liviana. |
+| El aviso rojo dice que se detuvo la cámara | El modo cámara se detiene solo tras 3 fallos seguidos del backend, para no seguir enviando frames. Revisa el servidor y vuelve a encenderla. |
+
+---
+
+## 👤 Autor
+
+**Juan Miguel Gallego**
+
+Proyecto de Python y Machine Learning — © 2026

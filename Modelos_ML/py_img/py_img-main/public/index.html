@@ -13,128 +13,184 @@
     <meta name="keywords"
         content="visión artificial, OpenCV, detección de rostros, procesamiento de imágenes, Python, machine learning, análisis de imágenes, cámara web, detección en tiempo real">
 
-    <meta name="theme-color" content="#212529">
+    <meta name="theme-color" content="#05060f">
     <meta name="MobileOptimized" content="width">
     <meta name="HandheldFriendly" content="true">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg-light d-flex flex-column min-vh-100">
+<body>
 
-    <header class="bg-dark text-white text-center py-5 shadow-sm">
-        <div class="container">
-            <h1 class="display-5 fw-bold">Procesamiento de Imágenes con OpenCV</h1>
-            <p class="lead mb-0 text-secondary">Detecta rostros subiendo una foto o directamente en vivo usando tu
-                cámara web.</p>
-        </div>
+    <!-- ================= FONDO DINÁMICO ================= -->
+    <div class="bg-fx" aria-hidden="true">
+        <span class="orb orb--cyan"></span>
+        <span class="orb orb--violet"></span>
+        <span class="orb orb--pink"></span>
+        <div class="grid-fx"></div>
+        <div class="grain-fx"></div>
+    </div>
+    <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+    <!-- ================= HERO ================= -->
+    <header class="hero">
+        <span class="chip">
+            <span class="chip__dot"></span>
+            Motor OpenCV en línea
+        </span>
+
+        <h1 class="hero__title">Visión <em>Artificial</em></h1>
+
+        <p class="hero__text">
+            Detecta rostros subiendo una foto o directamente en vivo usando tu cámara web.
+            Procesamiento de imágenes con Python + OpenCV.
+        </p>
+
+        <ul class="hero__stats">
+            <li>
+                <b id="statFaces">0</b>
+                <span>Detecciones acumuladas</span>
+            </li>
+            <li>
+                <b id="statFrames">0</b>
+                <span>Frames analizados</span>
+            </li>
+            <li>
+                <b>600<small>ms</small></b>
+                <span>Frecuencia de captura</span>
+            </li>
+        </ul>
     </header>
 
-    <main class="container my-5 flex-grow-1">
+    <!-- ================= CONTENIDO ================= -->
+    <main class="shell">
 
-        <div class="row justify-content-center mb-4">
-            <div class="col-auto">
-                <div class="btn-group shadow-sm" role="group" aria-label="Selector de modo de entrada">
-                    <button type="button" id="btnModeUpload" class="btn btn-primary active px-4">Subir Archivo</button>
-                    <button type="button" id="btnModeCamera" class="btn btn-outline-primary px-4">Usar Cámara</button>
-                </div>
-            </div>
+        <div class="modes" id="modeSelector" data-mode="upload" role="tablist" aria-label="Selector de modo de entrada">
+            <span class="modes__glider" aria-hidden="true"></span>
+            <button type="button" id="btnModeUpload" class="mode is-active" role="tab" aria-selected="true">
+                Subir archivo
+            </button>
+            <button type="button" id="btnModeCamera" class="mode" role="tab" aria-selected="false">
+                Usar cámara
+            </button>
         </div>
 
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-5">
+        <div class="workspace">
 
-                <div id="sectionUpload" class="card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column justify-content-between p-4">
-                        <div id="dropZone"
-                            class="position-relative border border-3 border-dashed rounded p-5 text-center bg-white mb-3 transition">
-                            <p class="mb-0 text-muted fw-semibold">Arrastra tu imagen aquí o haz clic para buscar</p>
-                            <input type="file" id="fileInput" class="drop-zone-input" accept="image/*"
-                                aria-label="Seleccionar imagen">
+            <!-- ---------- ENTRADA ---------- -->
+            <section class="panel panel--input">
+
+                <div id="sectionUpload" class="panel__body">
+                    <div id="dropZone" class="dropzone">
+                        <input type="file" id="fileInput" class="dropzone__input" accept="image/*"
+                            aria-label="Seleccionar imagen">
+                        <div class="dropzone__inner">
+                            <svg class="dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5" />
+                                <path d="M3.5 15v2.5A2.5 2.5 0 0 0 6 20h12a2.5 2.5 0 0 0 2.5-2.5V15" />
+                            </svg>
+                            <p class="dropzone__title">Arrastra tu imagen aquí</p>
+                            <p class="dropzone__hint">o haz clic para explorar · JPG, PNG, WEBP</p>
                         </div>
-                        <button id="btnProcess" class="btn btn-success w-100 py-2 fw-bold" disabled>
-                            Procesar Imagen
+                    </div>
+
+                    <button id="btnProcess" class="btn btn--primary btn--block" disabled>
+                        Procesar imagen
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 12h13m0 0-5.5-5.5M18 12l-5.5 5.5" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div id="sectionCamera" class="panel__body is-hidden">
+                    <div class="viewport" id="viewport">
+                        <video id="webcam" autoplay playsinline muted></video>
+                        <canvas id="canvasFrame" width="400" height="300" class="is-hidden"></canvas>
+
+                        <span class="hud hud--tl" aria-hidden="true"></span>
+                        <span class="hud hud--tr" aria-hidden="true"></span>
+                        <span class="hud hud--bl" aria-hidden="true"></span>
+                        <span class="hud hud--br" aria-hidden="true"></span>
+                        <span class="viewport__scan" aria-hidden="true"></span>
+                        <span class="viewport__rec"><i></i> Live</span>
+
+                        <p class="viewport__idle" id="viewportIdle">Cámara apagada</p>
+                    </div>
+
+                    <div class="controls">
+                        <button id="btnStartCamera" class="btn btn--primary">
+                            Encender cámara
+                        </button>
+                        <button id="btnToggleCamera" class="btn btn--ghost is-hidden">
+                            🔄 Cambiar cámara
+                        </button>
+                        <button id="btnStopCamera" class="btn btn--danger" disabled>
+                            Apagar cámara
                         </button>
                     </div>
                 </div>
 
-                <div id="sectionCamera" class="card h-100 shadow-sm d-none">
-                    <div class="card-body text-center p-4">
-                        <div class="bg-black rounded overflow-hidden shadow-inner d-flex justify-content-center align-items-center mb-3"
-                            style="min-height: 250px;">
-                            <video id="webcam" autoplay playsinline muted class="w-100"></video>
-                            <canvas id="canvasFrame" width="400" height="300" class="d-none"></canvas>
-                        </div>
-                        <div class="d-flex flex-wrap gap-2 justify-content-center">
-                            <button id="btnStartCamera" class="btn btn-primary px-4 fw-semibold">Encender
-                                Cámara</button>
-                            <button id="btnToggleCamera" class="btn btn-warning px-3 fw-semibold"
-                                style="display: none;">🔄 Cambiar Cámara</button>
-                            <button id="btnStopCamera" class="btn btn-danger px-4 fw-semibold" disabled>Apagar
-                                Cámara</button>
-                        </div>
+            </section>
+
+            <!-- ---------- SALIDA ---------- -->
+            <section class="panel panel--output">
+
+                <div id="errorZone" class="alert is-hidden" role="alert">
+                    <span class="alert__dot" aria-hidden="true"></span>
+                    <div>
+                        <p class="alert__title">No se pudo completar el análisis</p>
+                        <p class="alert__text" id="errorText"></p>
                     </div>
                 </div>
 
-            </div>
-
-            <div class="col-lg-7">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body p-4 d-flex flex-column justify-content-start">
-
-                        <div id="metricsZone" class="alert alert-success d-flex align-items-center mb-3 d-none"
-                            role="alert">
-                            <div>
-                                <h6 class="alert-heading fw-bold mb-1">Resultados del Análisis:</h6>
-                                <p class="mb-0">Rostros detectados en la escena: <span id="faceCount"
-                                        class="badge bg-success fs-6">0</span></p>
-                            </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div id="boxOriginal" class="col-sm-6 text-center">
-                                <div
-                                    class="p-3 bg-light rounded border border-secondary border-opacity-10 h-100 d-flex flex-column justify-content-center align-items-center">
-                                    <h6 class="text-muted mb-2">Vista Previa / Origen</h6>
-                                    <img id="imgOriginal" src="" alt="Vista previa" class="rounded shadow-sm d-none">
-                                </div>
-                            </div>
-
-                            <div class="col-sm-6 text-center mx-auto">
-                                <div class="p-3 bg-light rounded border border-secondary border-opacity-10 h-100 d-flex flex-column justify-content-center align-items-center position-relative"
-                                    style="min-height: 180px;">
-                                    <h6 class="text-muted mb-2">Resultado del Servidor</h6>
-
-                                    <img id="imgResult" src="" alt="Detección de rostros"
-                                        class="rounded shadow-sm d-none">
-
-                                    <div id="loader" class="spinner-border text-primary my-3 d-none" role="status">
-                                        <span class="visually-hidden">Procesando...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                <div id="metricsZone" class="metrics is-hidden" role="status" aria-live="polite">
+                    <span class="metrics__pulse" aria-hidden="true"></span>
+                    <div>
+                        <p class="metrics__label">Rostros detectados en la escena</p>
+                        <p class="metrics__value" id="faceCount">0</p>
                     </div>
                 </div>
-            </div>
+
+                <div class="grid-2">
+                    <figure id="boxOriginal" class="frame">
+                        <figcaption>Vista previa / origen</figcaption>
+                        <div class="frame__stage">
+                            <img id="imgOriginal" src="" alt="Vista previa" class="is-hidden">
+                            <p class="frame__empty" id="emptyOriginal">Sin imagen cargada</p>
+                        </div>
+                    </figure>
+
+                    <figure class="frame frame--result">
+                        <figcaption>Resultado del servidor</figcaption>
+                        <div class="frame__stage">
+                            <img id="imgResult" src="" alt="Detección de rostros" class="is-hidden">
+                            <div id="loader" class="loader is-hidden" role="status">
+                                <span class="loader__ring" aria-hidden="true"></span>
+                                <span class="loader__label">Analizando…</span>
+                            </div>
+                            <p class="frame__empty" id="emptyResult">Esperando análisis…</p>
+                        </div>
+                    </figure>
+                </div>
+
+            </section>
         </div>
     </main>
 
-    <footer class="bg-dark text-secondary text-center py-4 border-top border-secondary border-opacity-20 mt-auto">
-        <div class="container">
-            <p class="mb-1 small">&copy; 2026 - Python y Machine Learning</p>
-            <p class="mb-0 small">By Carlos Andrés Castro Jaramillo</p>
-        </div>
+    <footer class="site-footer">
+        <p>&copy; 2026 · Python &amp; Machine Learning</p>
+        <p>By Juan Miguel Gallego G</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 
