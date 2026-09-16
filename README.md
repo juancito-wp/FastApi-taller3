@@ -102,6 +102,7 @@ python manage.py runserver 8001
 | Random Forest | Streamlit Cloud | https://fastapi-taller3-onqn7nokbdwvmokaww8usc.streamlit.app/ |
 | Regresión Lineal — front | Railway | `https://front-production-a972.up.railway.app/` |
 | Regresión Lineal — back | Railway | `https://fastapi-taller3-production.up.railway.app/` |
+| Py_img - Desplegado en Vercel     | `https://pyimg-main.vercel.app/`
 
 ---
 

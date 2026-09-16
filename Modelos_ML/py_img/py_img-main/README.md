@@ -226,7 +226,7 @@ El proyecto ya incluye `vercel.json` con la configuración actual:
 4. **No crees un archivo `.python-version`**: el proyecto debe quedarse en el Python por defecto de Vercel (3.12), que es el que tiene wheels para las versiones fijadas en `requirements.txt`.
 5. `includeFiles` garantiza que el `.xml` del clasificador viaje dentro de la función. Aun así, el backend lo busca en varias rutas y como último recurso usa la copia que viene incluida en `opencv-python-headless`, así que la detección funciona incluso si el archivo no se empaqueta.
 6. `maxDuration: 30` da margen suficiente al *cold start* de OpenCV en la primera petición.
-7. **Verifica después de desplegar**: abre `https://TU-APP.vercel.app/api/detect` en el navegador. Debe responder con `"cascade_ok": true` y la ruta desde donde cargó el clasificador.
+7. **Verifica después de desplegar**: abre `https://pyimg-main.vercel.app//api/detect` en el navegador. Debe responder con `"cascade_ok": true` y la ruta desde donde cargó el clasificador.
 8. Recuerda que un cambio en el backend requiere **volver a desplegar**; el sitio publicado no se actualiza solo.
 
 > ⚠️ **Límite de tamaño**: Vercel rechaza los cuerpos de petición mayores a **4.5 MB**. Una fotografía de celular puede superar ese tamaño y devolver un error `413` antes de llegar a Flask. Si pasa, conviene redimensionar la imagen en el navegador antes de enviarla.
