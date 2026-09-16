@@ -177,7 +177,7 @@ Verifica en los **Deploy Logs** que aparezca:
 Uvicorn running on http://0.0.0.0:8000
 ```
 
-Prueba el health check abriendo `https://<dominio-del-back>/`:
+Prueba el health check abriendo `https://https://fastapi-taller3-production.up.railway.app//`:
 
 ```json
 {"status":"OK","message":"...","model_loaded":true}
@@ -188,7 +188,7 @@ Prueba el health check abriendo `https://<dominio-del-back>/`:
 | Ajuste | Valor |
 |---|---|
 | Root Directory | `Modelos_ML/RegresionLineal/front` |
-| Variables | `API_URL=https://<dominio-del-back>/predict` |
+| Variables | `API_URL=https://https://fastapi-taller3-production.up.railway.app/predict` |
 | Target port del dominio | `8000` |
 
 ### Problemas típicos

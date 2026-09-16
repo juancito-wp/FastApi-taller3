@@ -62,7 +62,7 @@ streamlit run Modelos_ML/RandomForest/3.Predecir_enfermedad.py
 
 > Los scripts usan rutas relativas a la raíz (`Modelos_ML/RandomForest/...`), así que **deben ejecutarse desde la raíz del repositorio**, no desde su carpeta.
 
-**App en vivo:** https://modelosml.streamlit.app/
+**App en vivo:** https://fastapi-taller3-onqn7nokbdwvmokaww8usc.streamlit.app//
 
 ---
 
@@ -99,7 +99,7 @@ python manage.py runserver 8001
 
 | Proyecto | Plataforma | Enlace |
 |---|---|---|
-| Random Forest | Streamlit Cloud | https://modelosml.streamlit.app/ |
+| Random Forest | Streamlit Cloud | https://fastapi-taller3-onqn7nokbdwvmokaww8usc.streamlit.app/ |
 | Regresión Lineal — front | Railway | `https://front-production-a972.up.railway.app/` |
 | Regresión Lineal — back | Railway | `https://fastapi-taller3-production.up.railway.app/` |
 

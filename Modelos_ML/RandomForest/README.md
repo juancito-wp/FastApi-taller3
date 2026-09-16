@@ -7,4 +7,4 @@
 # Ejecutar el proyecto en local
 
 # Desployment (Link)
-https://modelosml.streamlit.app/
+https://fastapi-taller3-onqn7nokbdwvmokaww8usc.streamlit.app/
