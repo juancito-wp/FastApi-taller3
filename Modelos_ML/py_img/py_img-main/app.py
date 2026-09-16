@@ -10,10 +10,28 @@ import sys
 # RUTAS DEL PROYECTO
 # ==========================================================================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.dirname(BASE_DIR)
-PUBLIC_DIR = os.path.join(PROJECT_ROOT, "public")
 
 CASCADE_FILENAME = "haarcascade_frontalface_default.xml"
+
+
+# La carpeta public/ se busca en varias ubicaciones para que el mismo archivo
+# funcione tanto en la raíz del proyecto (app.py) como dentro de api/.
+def _public_dir():
+    candidatos = [
+        os.path.join(BASE_DIR, "public"),  # backend en la raíz del proyecto
+        os.path.join(os.path.dirname(BASE_DIR), "public"),  # backend dentro de api/
+        os.path.join(os.getcwd(), "public"),
+        os.path.join("/var/task", "public"),  # bundle de Vercel
+    ]
+
+    for path in candidatos:
+        if os.path.isdir(path):
+            return path
+
+    return candidatos[0]
+
+
+PUBLIC_DIR = _public_dir()
 
 app = Flask(__name__, static_folder=PUBLIC_DIR)
 
@@ -188,5 +206,5 @@ app.debug = False
 
 
 if __name__ == "__main__":
-    # Servidor de desarrollo local:  python api/detect.py  ->  http://localhost:5000
+    # Servidor de desarrollo local:  python app.py  ->  http://localhost:5000
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -1,8 +1,7 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "outputDirectory": "public",
     "functions": {
-        "api/detect.py": {
+        "app.py": {
             "includeFiles": "haarcascade_frontalface_default.xml",
             "maxDuration": 30
         }

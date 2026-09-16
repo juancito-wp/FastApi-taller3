@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Vercel
+.vercel/
+
+# Sistema
+.DS_Store
+Thumbs.db

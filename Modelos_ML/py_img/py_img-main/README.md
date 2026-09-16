@@ -47,7 +47,7 @@ Aplicación web para detectar rostros con **Python + OpenCV**. Permite subir una
 | Clasificador | Haar Cascade `haarcascade_frontalface_default.xml` |
 | Datos | NumPy |
 | Frontend | HTML, CSS y JavaScript puros (sin dependencias) |
-| Despliegue | Vercel (función serverless + estáticos en el CDN) |
+| Despliegue | Vercel (el backend Flask se publica como Vercel Function) |
 
 ---
 
@@ -56,8 +56,7 @@ Aplicación web para detectar rostros con **Python + OpenCV**. Permite subir una
 ```plaintext
 py_img-main/
 │
-├── api/
-│   └── detect.py                        # Backend Flask: detección y diagnóstico
+├── app.py                               # Backend Flask: detección y diagnóstico
 │
 ├── public/
 │   ├── index.html                       # Interfaz del frontend
@@ -68,6 +67,7 @@ py_img-main/
 ├── haarcascade_frontalface_default.xml  # Clasificador de rostros de OpenCV
 ├── requirements.txt                     # Dependencias para Vercel
 ├── vercel.json                          # Configuración de despliegue
+├── .gitignore                           # Cachés y entornos virtuales fuera del repo
 └── README.md
 ```
 
@@ -102,7 +102,7 @@ python -m pip install flask
 ### 3. Arrancar el servidor
 
 ```bash
-python api/detect.py
+python app.py
 ```
 
 Verás algo así:
@@ -204,9 +204,8 @@ El proyecto ya incluye `vercel.json` con la configuración actual:
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "outputDirectory": "public",
   "functions": {
-    "api/detect.py": {
+    "app.py": {
       "includeFiles": "haarcascade_frontalface_default.xml",
       "maxDuration": 30
     }
@@ -216,12 +215,19 @@ El proyecto ya incluye `vercel.json` con la configuración actual:
 
 **Puntos importantes al desplegar:**
 
-1. **Fuera del proyecto en el dashboard**, deja el *Framework Preset* en **Other**. Si hay un preset distinto, `outputDirectory` no se aplica y el frontend no se sirve.
-2. **No crees un archivo `.python-version`**: el proyecto debe quedarse en el Python por defecto de Vercel (3.12), que es el que tiene wheels para las versiones fijadas en `requirements.txt`.
-3. `includeFiles` garantiza que el `.xml` del clasificador viaje dentro de la función. Aun así, el backend lo busca en varias rutas y como último recurso usa la copia que viene incluida en `opencv-python-headless`, así que la detección funciona incluso si el archivo no se empaqueta.
-4. `maxDuration: 30` da margen suficiente al *cold start* de OpenCV en la primera petición.
-5. **Verifica después de desplegar**: abre `https://TU-APP.vercel.app/api/detect` en el navegador. Debe responder con `"cascade_ok": true` y la ruta desde donde cargó el clasificador.
-6. Recuerda que un cambio en el backend requiere **volver a desplegar**; el sitio publicado no se actualiza solo.
+1. **Ubicación del backend — el punto más delicado.** El runtime de Python de Vercel solo reconoce como entrypoint a `app.py`, `index.py`, `server.py`, `main.py`, `wsgi.py` o `asgi.py`, y solo si están en la **raíz** del proyecto o dentro de `src/` o `app/`. Por eso el backend vive en la raíz como `app.py`, y no en una carpeta `api/`. Si lo mueves a otra ubicación, tendrás que declararlo a mano en `pyproject.toml`:
+
+   ```toml
+   [tool.vercel]
+   entrypoint = "mi_carpeta.app:app"
+   ```
+2. **No fuerces un preset de frontend** (Next.js, Vite, etc.) en el dashboard del proyecto. Vercel detecta Flask automáticamente al encontrar la dependencia en `requirements.txt`, y enruta todas las peticiones al backend.
+3. Al ser un preset de Python, **todo el tráfico pasa por la función Flask**, incluidos `style.css`, `script.js` y las imágenes: Flask los sirve desde `public/`. Por eso no se usa `outputDirectory`.
+4. **No crees un archivo `.python-version`**: el proyecto debe quedarse en el Python por defecto de Vercel (3.12), que es el que tiene wheels para las versiones fijadas en `requirements.txt`.
+5. `includeFiles` garantiza que el `.xml` del clasificador viaje dentro de la función. Aun así, el backend lo busca en varias rutas y como último recurso usa la copia que viene incluida en `opencv-python-headless`, así que la detección funciona incluso si el archivo no se empaqueta.
+6. `maxDuration: 30` da margen suficiente al *cold start* de OpenCV en la primera petición.
+7. **Verifica después de desplegar**: abre `https://TU-APP.vercel.app/api/detect` en el navegador. Debe responder con `"cascade_ok": true` y la ruta desde donde cargó el clasificador.
+8. Recuerda que un cambio en el backend requiere **volver a desplegar**; el sitio publicado no se actualiza solo.
 
 > ⚠️ **Límite de tamaño**: Vercel rechaza los cuerpos de petición mayores a **4.5 MB**. Una fotografía de celular puede superar ese tamaño y devolver un error `413` antes de llegar a Flask. Si pasa, conviene redimensionar la imagen en el navegador antes de enviarla.
 
@@ -231,8 +237,9 @@ El proyecto ya incluye `vercel.json` con la configuración actual:
 
 | Síntoma | Causa y solución |
 | :--- | :--- |
-| El panel "Resultado del servidor" se queda vacío y no aparece el conteo | El backend no está atendiendo `/api/detect`. Abre la app desde <http://localhost:5000> con `python api/detect.py` corriendo; no uses Live Server ni abras el HTML directo. |
-| Aviso rojo con `404` en `/api/detect` | La ruta no existe en el servidor actual. Arranca Flask (`python api/detect.py`) y entra por `http://localhost:5000`. |
+| El panel "Resultado del servidor" se queda vacío y no aparece el conteo | El backend no está atendiendo `/api/detect`. Abre la app desde <http://localhost:5000> con `python app.py` corriendo; no uses Live Server ni abras el HTML directo. |
+| Aviso rojo con `404` en `/api/detect` | La ruta no existe en el servidor actual. Arranca Flask (`python app.py`) y entra por `http://localhost:5000`. |
+| Vercel: `No python entrypoint found in default locations` | El backend no está en una ubicación que Vercel reconozca. Debe llamarse `app.py` (o `index.py`, `server.py`, `main.py`, `wsgi.py`, `asgi.py`) y estar en la raíz, en `src/` o en `app/`; si no, declara el entrypoint en `pyproject.toml`. |
 | `500` con `(-215:Assertion failed) !empty()` | El clasificador Haar cargó vacío porque no encontró el `.xml`. Revisa `GET /api/detect`: debe aparecer `"cascade_ok": true`. |
 | La cámara no enciende o da error de permisos | `getUserMedia` solo funciona en `localhost` o HTTPS, nunca desde `file://`. Usa `http://localhost:5000`. |
 | `ModuleNotFoundError: No module named 'flask'` | Falta Flask en el intérprete con el que ejecutas: `python -m pip install flask`. |
